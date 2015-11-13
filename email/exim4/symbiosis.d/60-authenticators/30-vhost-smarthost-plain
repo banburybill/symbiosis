@@ -1,0 +1,10 @@
+vhost_smarthost_plain:
+  driver = plaintext
+  public_name = PLAIN
+  client_condition = ${if \
+    and{\
+      {!eq{$tls_out_cipher}{}}\
+      {exists{VHOST_DIR/$sender_address_domain/VHOST_CONFIG_DIR/smarthost}}\
+    }}
+  client_send = "<; ${if match{${readfile{VHOST_DIR/$sender_address_domain/VHOST_CONFIG_DIR/smarthost}}}{VHOST_SMARTHOST_AUTH_REGEX}{^$1^$2}fail}"
+

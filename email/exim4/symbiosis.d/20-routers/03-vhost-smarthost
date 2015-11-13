@@ -1,0 +1,28 @@
+#
+# Route specific domains manually.  For this to work, they must have a
+# "smarthost" file in config, with contents of
+# 
+# hostname:port:username:password
+#
+# The port fields, and username + password fields are optional.  All the
+# following configurations should work:
+#
+# smarthost.com
+# smarthost.com:1234
+# smarthost.com:user@smarthost.com:password
+# smarthost.com:1234:user@smarthost.com:password
+#
+vhost_smarthost:
+  debug_print = "R: vhost_smarthost for $domain (from $sender_address_domain)"
+  driver      = manualroute
+  condition   = ${if and{\
+      {!eq{$sender_address_domain}{}}\
+      {exists{VHOST_DIR/$sender_address_domain/VHOST_CONFIG_DIR/smarthost}}\
+      {match{${readfile{VHOST_DIR/$sender_address_domain/VHOST_CONFIG_DIR/smarthost}}}{VHOST_SMARTHOST_ROUTE_REGEX}}\
+  }}
+  route_list  = * "</ ${if match{${readfile{VHOST_DIR/$sender_address_domain/VHOST_CONFIG_DIR/smarthost}}}{VHOST_SMARTHOST_ROUTE_REGEX}{$1}fail}"
+  transport   = remote_smtp
+  same_domain_copy_routing = yes
+  ignore_target_hosts      = +private_addresses
+  no_more
+

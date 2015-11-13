@@ -14,4 +14,20 @@ CLAMAV_SOCKET = /var/run/clamav/clamd.ctl
 # This user is used if no appropriate user can be found wilst using spamassassin.
 DEFAULT_SPAMD_USER = nobody
 
+#
+# These macros are for matching host/port/username/password from in
+# /srv/domain.com/config/smarthost.  We've assumed the format is one of 
+#
+# mail.host.com
+# mail.host.com:username:password
+# mail.host.com:port
+# mail.host.com:port:username:password
+#
+# This has the limit that usernames cannot contain colons.
+#
+# The first regex puts host:port in $1, and is used in routing.
+# The second puts username in $1 and password in $2, and is used in authentication.
+#
+VHOST_SMARTHOST_ROUTE_REGEX = (?:^|[\\r\\n]+)([^#:][^:]+(?::[0-9]+)?):?
+VHOST_SMARTHOST_AUTH_REGEX  = (?:^|[\\r\\n]+)[^#:][^:]+(?::[0-9]*)?(?::([^\\r\\n:]+):(.+))
 

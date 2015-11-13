@@ -4,6 +4,15 @@ remote_smtp:
   debug_print = "T: remote_smtp for $local_part@$domain"
   driver = smtp
 
+  #
+  # If this is a "smarthost" then force authentication, if configured.
+  #
+  hosts_require_auth = ${if and{\
+     {!eq{$sender_address_domain}{}}\
+     {exists{VHOST_DIR/$sender_address_domain/config/smarthost}}\
+     {match{${readfile{VHOST_DIR/$sender_address_domain/config/smarthost}}}{VHOST_SMARTHOST_AUTH_REGEX}}\
+   }{*}{}}
+
   # 
   # Use the domain's IP (if it has one) to send outgoing mail.  We use
   # $sender_address_domain, or a default value kept in

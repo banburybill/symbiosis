@@ -1,0 +1,7 @@
+vhost_smarthost_cram_md5:
+  driver        = cram_md5
+  public_name   = CRAM-MD5
+  client_condition = ${if exists{VHOST_DIR/$sender_address_domain/VHOST_CONFIG_DIR/smarthost}}
+  client_name   = ${if match{${readfile{VHOST_DIR/$sender_address_domain/VHOST_CONFIG_DIR/smarthost}}}{VHOST_SMARTHOST_AUTH_REGEX}{$1}fail}
+  client_secret = ${if match{${readfile{VHOST_DIR/$sender_address_domain/VHOST_CONFIG_DIR/smarthost}}}{VHOST_SMARTHOST_AUTH_REGEX}{$2}fail}
+
