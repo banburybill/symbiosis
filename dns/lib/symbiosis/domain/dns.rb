@@ -25,8 +25,13 @@ module Symbiosis
       spf = "v=spf1 +a +mx ?all" if spf === true
 
       if spf.is_a?(String)
-       # Encode just the first line 
-       tinydns_encode(spf.split($/).first)
+        # We encode just the first line.
+        line = spf.split($/).first
+
+        # But we make sure we remove any trailing \r, or \n characeters
+        line = line.tr( "\n\r", "" )
+
+        tinydns_encode(line)
       else
         nil
       end
@@ -95,7 +100,7 @@ module Symbiosis
         "pct" => (has_antispam ? "100"  : nil)
       }.reject{|k,v| v.nil?}
 
-      # 
+      #
       # raw_dmarc = raw_dmarc.to_s.split($/)
       #
       # raw_dmarc.each do |line|
@@ -123,7 +128,7 @@ module Symbiosis
 
     #
     # Decodes a given string from a format suitable for consupmtion by TinyDNS
-    # 
+    #
     def tinydns_decode(s)
       s.gsub(/(?:\\([0-7]{3,3})|.)/){|r| $1 ? [$1.oct].pack("c*") : r}
     end
@@ -132,4 +137,3 @@ module Symbiosis
   end
 
 end
-
